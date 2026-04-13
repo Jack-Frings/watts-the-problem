@@ -63,19 +63,18 @@ func update_grid_logic():
 	for positive in positives:
 		var min_resistance_path = Array()
 		var min_resistance_pos = Vector2i()
-		var min_resistance: int = 0
+		var min_resistance: int = -1
 		for negative in negatives:
 			var path = get_path_of_least_resistance(positive, negative)
 			var resistance = get_resistance(path)
-			if resistance < min_resistance:
+			if resistance < min_resistance or min_resistance == -1:
 				min_resistance_path = path
 				min_resistance_pos = negative
 				min_resistance = resistance
 				
-		print(positives)
-		print(negatives)
+		print(min_resistance_path)
 		#self.map[min_resistance_pos.y][min_resistance_pos.x].path_resistance = min_resistance
-		#elf.map[min_resistance_pos.y][min_resistance_pos.x].wattage = (self.map[positive.y][positive.x]**2) / min_resistance
+		#self.map[min_resistance_pos.y][min_resistance_pos.x].wattage = (self.map[positive.y][positive.x]**2) / min_resistance
 		
 		
 		for tile in min_resistance_path:

@@ -16,7 +16,7 @@ var circuit_height = 6
 
 var component_lib_origin = Vector2i(-3, 0)
 var component_lib_width = 2
-var component_lib_height = 2
+var component_lib_height = 6
 
 var px = 0
 var py = 0
@@ -27,7 +27,7 @@ var p_workspace = WORKSPACE.CIRCUIT
 
 var move_timer_x = 0.0
 var move_timer_y = 0.0
-var move_delay = 0.5
+var move_delay = 0.3
 var move_repeat = 0.15
 
 
@@ -38,9 +38,13 @@ func _ready() -> void:
 			
 	circuit_grid.edit_tile(0, 0, BatteryPositiveTop.new(0), true)
 	circuit_grid.edit_tile(0, 1, BatteryPositiveBottom.new(0), true)
+	circuit_grid.edit_tile(0, 4, BatteryNegativeTop.new(0), true)
+	circuit_grid.edit_tile(0, 5, BatteryNegativeBottom.new(0), true)
+	
+	circuit_grid.edit_tile(8, 0, BatteryPositiveTop.new(0), true)
+	circuit_grid.edit_tile(8, 1, BatteryPositiveBottom.new(0), true)
 	circuit_grid.edit_tile(8, 4, BatteryNegativeTop.new(0), true)
 	circuit_grid.edit_tile(8, 5, BatteryNegativeBottom.new(0), true)
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -76,6 +80,9 @@ func player_action() -> void:
 				
 	if Input.is_action_just_pressed("drop"):
 		p_tile = null
+		
+	if Input.is_action_just_pressed("escape"):
+		get_tree().quit()
 						
 func add_tile_to_parts(tile: CircuitTile) -> void:
 	if tile is StraightConnector: straight_connector_count += 1

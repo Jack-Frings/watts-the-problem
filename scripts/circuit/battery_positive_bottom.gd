@@ -1,6 +1,8 @@
 class_name BatteryPositiveBottom extends CircuitTile
 
-var voltage: int = 5
+var path: Array
+var path_resistance: int = 100
+var voltage: float = 5.0
 
 func _init(rot: int) -> void:
 	var atlas_x = 2

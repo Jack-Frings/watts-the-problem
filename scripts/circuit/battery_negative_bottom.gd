@@ -1,6 +1,5 @@
 class_name BatteryNegativeBottom extends CircuitTile
 
-var path_resistance: int = 0
 var wattage: int = 0
 
 func _init(rot: int) -> void:

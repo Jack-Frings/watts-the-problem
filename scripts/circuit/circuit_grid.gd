@@ -61,23 +61,30 @@ func update_grid_logic():
 				self.map[y][x].source_id = 1 # defaulting to off
 				
 	for positive in positives:
+		self.map[positive.y][positive.x].path = Array()
+		self.map[positive.y][positive.x].path_resistance = 1000
+				
+	for positive in positives:
 		var min_resistance_path = Array()
-		var min_resistance_pos = Vector2i()
-		var min_resistance: int = -1
+		var min_resistance_pos = Vector2i(-1, -1)
+		var min_resistance: float = -1
 		for negative in negatives:
 			var path = get_path_of_least_resistance(positive, negative)
-			var resistance = get_resistance(path)
-			if resistance < min_resistance or min_resistance == -1:
-				min_resistance_path = path
-				min_resistance_pos = negative
-				min_resistance = resistance
+			if path.size() > 0:
+				var resistance = get_resistance(path)
+				if resistance < min_resistance or min_resistance == -1:
+					min_resistance_path = path
+					min_resistance_pos = negative
+					min_resistance = resistance
 				
-		print(min_resistance_path)
-		#self.map[min_resistance_pos.y][min_resistance_pos.x].path_resistance = min_resistance
-		#self.map[min_resistance_pos.y][min_resistance_pos.x].wattage = (self.map[positive.y][positive.x]**2) / min_resistance
-		
-		
-		for tile in min_resistance_path:
+		if min_resistance_pos != Vector2i(-1, -1):
+			if min_resistance < self.map[positive.y][positive.x].path_resistance:
+				self.map[positive.y][positive.x].path = min_resistance_path.duplicate(true)
+				self.map[positive.y][positive.x].path_resistance = min_resistance
+				self.map[min_resistance_pos.y][min_resistance_pos.x].wattage += (self.map[positive.y][positive.x].voltage**2) / min_resistance
+
+	for positive in positives:
+		for tile in self.map[positive.y][positive.x].path:
 			var x = tile[0]
 			var y = tile[1]
 			self.map[y][x].source_id = 0 # turn tiles on the path of least resistance on

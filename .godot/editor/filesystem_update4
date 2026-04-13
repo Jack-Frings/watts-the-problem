@@ -1,2 +1,6 @@
-res://scripts/circuit/circuit_grid.gd
 res://scenes/main.tscn
+res://scripts/main.gd
+res://scripts/circuit/circuit_grid.gd
+res://scripts/circuit/battery_negative_bottom.gd
+res://scripts/circuit/battery_positive_bottom.gd
+res://scenes/tile_map.tscn

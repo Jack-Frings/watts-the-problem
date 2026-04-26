@@ -5,6 +5,7 @@ var locked_table = Array()
 
 var width: int 
 var height: int
+var battery_top_rendering_layer
 var rendering_layer
 var icon_rendering_layer
 
@@ -12,8 +13,9 @@ var icon_rendering_layer
 var positives = Array()
 var negatives = Array()
 
-func _init(rendering_layer, icon_rendering_layer, width: int, height: int) -> void:
+func _init(rendering_layer, battery_top_rendering_layer, icon_rendering_layer, width: int, height: int) -> void:
 	self.rendering_layer = rendering_layer
+	self.battery_top_rendering_layer = battery_top_rendering_layer
 	self.icon_rendering_layer = icon_rendering_layer
 	var row = Array()
 	var locked_row = Array()
@@ -28,6 +30,15 @@ func _init(rendering_layer, icon_rendering_layer, width: int, height: int) -> vo
 	self.height = height
 	
 func render() -> void:
+	for positive in positives:
+		var tile = self.map[positive.y][positive.x]
+		self.rendering_layer.set_cell(Vector2i(positive.x, positive.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
+
+	for negative in negatives:
+		var tile = self.map[negative.y][negative.x]
+		self.rendering_layer.set_cell(Vector2i(negative.x, negative.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
+
+		
 	for y in range(len(self.map)):
 		for x in range(len(self.map[y])):
 			var tile = self.map[y][x]
@@ -35,7 +46,10 @@ func render() -> void:
 				self.rendering_layer.erase_cell(Vector2i(x, y))
 			else:
 				self.rendering_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(tile.atlas_x, tile.atlas_y), tile.get_rotation())
-				
+				if tile is BatteryPositiveBottom or tile is BatteryNegativeBottom:
+					self.battery_top_rendering_layer.set_cell(Vector2i(x, y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
+
+			
 			if self.locked_table[y][x]:
 				self.icon_rendering_layer.set_cell(Vector2i(x, y), 1, Vector2i(0, 0))
 				
@@ -61,49 +75,61 @@ func update_grid_logic():
 				self.map[y][x].source_id = 1 # defaulting to off
 				
 	for positive in positives:
-		self.map[positive.y][positive.x].path = Array()
+		self.map[positive.y][positive.x].paths = Array()
 		self.map[positive.y][positive.x].path_resistance = 1000
+		
+	for negative in negatives:
+		self.map[negative.y][negative.x].wattage = 0
 				
 	for positive in positives:
-		var min_resistance_path = Array()
-		var min_resistance_pos = Vector2i(-1, -1)
+		var min_resistance_paths = Array()
 		var min_resistance: float = -1
 		for negative in negatives:
-			var path = get_path_of_least_resistance(positive, negative)
-			if path.size() > 0:
-				var resistance = get_resistance(path)
-				if resistance < min_resistance or min_resistance == -1:
-					min_resistance_path = path
-					min_resistance_pos = negative
-					min_resistance = resistance
+			var paths = get_paths_of_least_resistance(positive, negative)
+			for path in paths:
+				if path.size() > 0:
+					var resistance = get_resistance(path)
+					if resistance < min_resistance or min_resistance == -1:
+						min_resistance_paths.clear()
+						min_resistance_paths.append(path)
+						min_resistance = resistance
+					elif resistance == min_resistance:
+						min_resistance_paths.append(path)
+						min_resistance = resistance
 				
-		if min_resistance_pos != Vector2i(-1, -1):
+		if min_resistance != -1:
 			if min_resistance < self.map[positive.y][positive.x].path_resistance:
-				self.map[positive.y][positive.x].path = min_resistance_path.duplicate(true)
+				self.map[positive.y][positive.x].paths = min_resistance_paths.duplicate(true)
 				self.map[positive.y][positive.x].path_resistance = min_resistance
-				self.map[min_resistance_pos.y][min_resistance_pos.x].wattage += (self.map[positive.y][positive.x].voltage**2) / min_resistance
+				for path in min_resistance_paths:
+					var x = path[-1][0]
+					var y = path[-1][1]
+					self.map[y][x].wattage += (self.map[positive.y][positive.x].voltage**2) / (float) (min_resistance*min_resistance_paths.size())
 
 	for positive in positives:
-		for tile in self.map[positive.y][positive.x].path:
-			var x = tile[0]
-			var y = tile[1]
-			self.map[y][x].source_id = 0 # turn tiles on the path of least resistance on
+		for path in self.map[positive.y][positive.x].paths:
+			for tile in path:
+				var x = tile[0]
+				var y = tile[1]
+				self.map[y][x].source_id = 0 # turn tiles on the path of least resistance on
 
-func get_path_of_least_resistance(positive: Vector2i, negative: Vector2i) -> Array:
+func get_paths_of_least_resistance(positive: Vector2i, negative: Vector2i) -> Array:
 	var paths = find_all_routes(positive.x, positive.y, negative.x, negative.y)
 	if paths.is_empty():
 		return []
 
 	var min = get_resistance(paths[0])
-	var path_of_least_resistance = paths[0]
+	var paths_of_least_resistance = [paths[0]]
 	
 	for path in paths:
 		var resistance = get_resistance(path)
-		if resistance <= min:
+		if resistance < min:
 			min = resistance
-			path_of_least_resistance = path 
+			paths_of_least_resistance = [path]
+		elif resistance == min:
+			paths_of_least_resistance.append(path)
 			
-	return path_of_least_resistance
+	return paths_of_least_resistance
 
 func get_resistance(path) -> int:
 	var resistance = 0
@@ -153,7 +179,7 @@ func get_neighbor_conections(x: int, y: int) -> Array:
 		var neighbor = self.map[neighbor_y][neighbor_x]
 		if neighbor == null: continue
 		
-		var points_back = false 
+		var points_back = false
 		for neighbor_con in neighbor.cons:
 			if int(neighbor_con.x) == -int(con.x) and int(neighbor_con.y) == -int(con.y):
 				points_back = true

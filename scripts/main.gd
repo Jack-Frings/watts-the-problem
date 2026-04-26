@@ -1,5 +1,6 @@
 extends Node
 @onready var rendering_layer = $"TileMap/CircuitLayer"
+@onready var battery_top_rendering_layer = $"TileMap/BatteryTopLayer"
 @onready var selection_rendering_layer = $"TileMap/SelectionLayer"
 @onready var icon_rendering_layer =  $"TileMap/IconLayer"
 
@@ -7,6 +8,8 @@ var straight_connector_count = 90
 var right_angle_connector_count = 90
 var three_way_connector_count = 90
 var four_way_connector_count = 90
+var resistor_count = 90 
+var diode_count = 90
 
 var circuit_grid
 var component_lib
@@ -17,7 +20,6 @@ var circuit_height = 6
 var component_lib_origin = Vector2i(-3, 0)
 var component_lib_width = 2
 var component_lib_height = 6
-
 var px = 0
 var py = 0
 var p_tile = null
@@ -30,21 +32,21 @@ var move_timer_y = 0.0
 var move_delay = 0.3
 var move_repeat = 0.15
 
+var cursor_icon_shift_time = 0.0
+var cursor_icon_shift_timer = 0.5
+var cursor_icon_id = 0
 
 func _ready() -> void:
-	print("check")
-	circuit_grid = CircuitGrid.new(rendering_layer, icon_rendering_layer, circuit_width, circuit_height)
+	circuit_grid = CircuitGrid.new(rendering_layer, battery_top_rendering_layer, icon_rendering_layer, circuit_width, circuit_height)
 	component_lib = ComponentLib.new(rendering_layer, component_lib_origin, component_lib_width, component_lib_height)
 			
-	circuit_grid.edit_tile(0, 0, BatteryPositiveTop.new(0), true)
-	circuit_grid.edit_tile(0, 1, BatteryPositiveBottom.new(0), true)
-	circuit_grid.edit_tile(0, 4, BatteryNegativeTop.new(0), true)
-	circuit_grid.edit_tile(0, 5, BatteryNegativeBottom.new(0), true)
+	circuit_grid.edit_tile(4, 3, BatteryPositiveBottom.new(0), true)
+
+	circuit_grid.edit_tile(3, 5, BatteryNegativeBottom.new(0), true)
+	circuit_grid.edit_tile(0, 3, BatteryNegativeBottom.new(0), true)
+	circuit_grid.edit_tile(8, 3, BatteryNegativeBottom.new(0), true)
 	
-	circuit_grid.edit_tile(8, 0, BatteryPositiveTop.new(0), true)
-	circuit_grid.edit_tile(8, 1, BatteryPositiveBottom.new(0), true)
-	circuit_grid.edit_tile(8, 4, BatteryNegativeTop.new(0), true)
-	circuit_grid.edit_tile(8, 5, BatteryNegativeBottom.new(0), true)
+	circuit_grid.edit_tile(4, 5, RightAngleConnector.new(0))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -57,21 +59,32 @@ func _process(delta: float) -> void:
 	display_part_count(1, 0, right_angle_connector_count)
 	display_part_count(0, 1, three_way_connector_count)
 	display_part_count(1, 1, four_way_connector_count)
+	display_part_count(0, 2, resistor_count)
+	display_part_count(1, 2, diode_count)
+	
+	#var i = 0
+	print(circuit_grid.negatives)
+	for negative in circuit_grid.negatives:
+		display_wattage(negative.x, negative.y-1, circuit_grid.map[negative.y][negative.x].wattage)
 	
 func display_part_count(x: int, y: int, count: int):
 	icon_rendering_layer.set_cell(Vector2i(component_lib_origin.x+x, component_lib_origin.y+y), 0, Vector2i(count % 10, count / 10))
+	
+func display_wattage(x: int, y: int, count: int):
+	icon_rendering_layer.set_cell(Vector2i(x, y), 0, Vector2i(count % 10, count / 10))
 
 func player_action() -> void:
 	if Input.is_action_pressed("erase") and p_workspace == WORKSPACE.CIRCUIT:
 		add_tile_to_parts(circuit_grid.map[py][px])
 		circuit_grid.erase_tile(px, py)
 	
-	if Input.is_action_just_pressed("rotate"):
+	if Input.is_action_just_pressed("rotate") and p_tile != null:
 		p_tile.rot_cw()
 		
 	if Input.is_action_pressed("select"):
 		if p_workspace ==  WORKSPACE.COMPONENT_LIB:
-			p_tile = component_lib.map[py - component_lib_origin.y][px - component_lib_origin.x].duplicate()
+			if component_lib.map[py - component_lib_origin.y][px - component_lib_origin.x] != null:
+				p_tile = component_lib.map[py - component_lib_origin.y][px - component_lib_origin.x].duplicate()
 		elif p_workspace == WORKSPACE.CIRCUIT:
 			if not circuit_grid.locked_table[py][px]:
 				if remove_tile_from_parts(p_tile):
@@ -89,6 +102,8 @@ func add_tile_to_parts(tile: CircuitTile) -> void:
 	elif tile is RightAngleConnector: right_angle_connector_count += 1 
 	elif tile is ThreeWayConnector: three_way_connector_count += 1
 	elif tile is FourWayConnector: four_way_connector_count += 1
+	elif tile is Resistor: resistor_count += 1
+	elif tile is Diode: diode_count += 1
 	else: pass
 	
 func remove_tile_from_parts(tile) -> bool:
@@ -108,10 +123,24 @@ func remove_tile_from_parts(tile) -> bool:
 		if four_way_connector_count > 0:
 			four_way_connector_count -= 1
 			return true
+	elif tile is Resistor:
+		if resistor_count > 0:
+			resistor_count -= 1
+			return true
+	elif tile is Diode:
+		if diode_count > 0:
+			diode_count -= 1
+			return true
 			
 	return false
 
 func player_movement(delta: float) -> void:
+	cursor_icon_shift_time += delta
+	if cursor_icon_shift_time > cursor_icon_shift_timer:
+		cursor_icon_shift_time = 0.0
+		if cursor_icon_id == 0: cursor_icon_id = 1
+		elif cursor_icon_id == 1: cursor_icon_id = 0
+
 	var opx = px
 	var opy = py
 	var op_workspace = p_workspace
@@ -196,7 +225,7 @@ func player_movement(delta: float) -> void:
 			
 	if p_tile == null or p_workspace == WORKSPACE.COMPONENT_LIB:
 		selection_rendering_layer.modulate = Color(1, 1, 1, 1)
-		self.selection_rendering_layer.set_cell(Vector2i(px, py), 0, Vector2i(0, 0)) # selection-box icon
+		self.selection_rendering_layer.set_cell(Vector2i(px, py), cursor_icon_id, Vector2i(0, 0)) # selection-box icon
 	else:
 		selection_rendering_layer.modulate = Color(0.5, 0.5, 0.5, 0.5)
-		self.selection_rendering_layer.set_cell(Vector2i(px, py), p_tile.source_id, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon
+		self.selection_rendering_layer.set_cell(Vector2i(px, py),2, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon

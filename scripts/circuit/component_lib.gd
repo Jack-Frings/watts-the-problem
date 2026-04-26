@@ -23,6 +23,8 @@ func _init(rendering_layer, origin: Vector2i, width: int, height: int) -> void:
 	edit_tile(1, 0, RightAngleConnector.new(0))
 	edit_tile(0, 1, ThreeWayConnector.new(0))
 	edit_tile(1, 1, FourWayConnector.new(0))
+	edit_tile(0, 2, Resistor.new(0))
+	edit_tile(1, 2, Diode.new(0))
 		
 func edit_tile(input_x: int, input_y: int, input_tile):
 	self.map[input_y][input_x] = input_tile

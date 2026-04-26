@@ -1,8 +1,14 @@
 extends Node
-@onready var rendering_layer = $"TileMap/CircuitLayer"
-@onready var battery_top_rendering_layer = $"TileMap/BatteryTopLayer"
-@onready var selection_rendering_layer = $"TileMap/SelectionLayer"
-@onready var icon_rendering_layer =  $"TileMap/IconLayer"
+
+@onready var circuit_layer = $"TileMap/CircuitLayer"
+
+@onready var battery_transition_left_layer = $"TileMap/BatteryTransitionLayer/Left"
+@onready var battery_transition_right_layer = $"TileMap/BatteryTransitionLayer/Right"
+@onready var battery_transition_down_layer = $"TileMap/BatteryTransitionLayer/Down"
+
+@onready var battery_top_layer = $"TileMap/BatteryTopLayer"
+@onready var selection_layer = $"TileMap/SelectionLayer"
+@onready var icon_layer =  $"TileMap/IconLayer"
 
 var straight_connector_count = 90
 var right_angle_connector_count = 90
@@ -37,17 +43,17 @@ var cursor_icon_shift_timer = 0.5
 var cursor_icon_id = 0
 
 func _ready() -> void:
-	circuit_grid = CircuitGrid.new(rendering_layer, battery_top_rendering_layer, icon_rendering_layer, circuit_width, circuit_height)
-	component_lib = ComponentLib.new(rendering_layer, component_lib_origin, component_lib_width, component_lib_height)
+	circuit_grid = CircuitGrid.new(circuit_layer, battery_top_layer, \
+									battery_transition_left_layer, battery_transition_right_layer, battery_transition_down_layer, \
+									icon_layer, circuit_width, circuit_height)
+	component_lib = ComponentLib.new(circuit_layer, component_lib_origin, component_lib_width, component_lib_height)
 			
-	circuit_grid.edit_tile(4, 3, BatteryPositiveBottom.new(0), true)
+	circuit_grid.edit_tile(4, 3, BatteryPositive.new(0), true)
 
-	circuit_grid.edit_tile(3, 5, BatteryNegativeBottom.new(0), true)
-	circuit_grid.edit_tile(0, 3, BatteryNegativeBottom.new(0), true)
-	circuit_grid.edit_tile(8, 3, BatteryNegativeBottom.new(0), true)
+	circuit_grid.edit_tile(3, 5, BatteryNegative.new(0), true)
+	circuit_grid.edit_tile(0, 3, BatteryNegative.new(0), true)
+	circuit_grid.edit_tile(8, 3, BatteryNegative.new(0), true)
 	
-	circuit_grid.edit_tile(4, 5, RightAngleConnector.new(0))
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	player_movement(delta)
@@ -62,16 +68,14 @@ func _process(delta: float) -> void:
 	display_part_count(0, 2, resistor_count)
 	display_part_count(1, 2, diode_count)
 	
-	#var i = 0
-	print(circuit_grid.negatives)
 	for negative in circuit_grid.negatives:
 		display_wattage(negative.x, negative.y-1, circuit_grid.map[negative.y][negative.x].wattage)
-	
+		
 func display_part_count(x: int, y: int, count: int):
-	icon_rendering_layer.set_cell(Vector2i(component_lib_origin.x+x, component_lib_origin.y+y), 0, Vector2i(count % 10, count / 10))
+	icon_layer.set_cell(Vector2i(component_lib_origin.x+x, component_lib_origin.y+y), 0, Vector2i(count % 10, count / 10))
 	
 func display_wattage(x: int, y: int, count: int):
-	icon_rendering_layer.set_cell(Vector2i(x, y), 0, Vector2i(count % 10, count / 10))
+	icon_layer.set_cell(Vector2i(x, y), 0, Vector2i(count % 10, count / 10))
 
 func player_action() -> void:
 	if Input.is_action_pressed("erase") and p_workspace == WORKSPACE.CIRCUIT:
@@ -221,11 +225,11 @@ func player_movement(delta: float) -> void:
 						py += 1
 
 	if opx != px or opy != py or p_workspace != op_workspace:
-		self.selection_rendering_layer.erase_cell(Vector2i(opx, opy))
+		self.selection_layer.erase_cell(Vector2i(opx, opy))
 			
 	if p_tile == null or p_workspace == WORKSPACE.COMPONENT_LIB:
-		selection_rendering_layer.modulate = Color(1, 1, 1, 1)
-		self.selection_rendering_layer.set_cell(Vector2i(px, py), cursor_icon_id, Vector2i(0, 0)) # selection-box icon
+		selection_layer.modulate = Color(1, 1, 1, 1)
+		self.selection_layer.set_cell(Vector2i(px, py), cursor_icon_id, Vector2i(0, 0)) # selection-box icon
 	else:
-		selection_rendering_layer.modulate = Color(0.5, 0.5, 0.5, 0.5)
-		self.selection_rendering_layer.set_cell(Vector2i(px, py),2, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon
+		selection_layer.modulate = Color(0.5, 0.5, 0.5, 0.5)
+		self.selection_layer.set_cell(Vector2i(px, py),2, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon

@@ -5,18 +5,28 @@ var locked_table = Array()
 
 var width: int 
 var height: int
-var battery_top_rendering_layer
-var rendering_layer
-var icon_rendering_layer
+
+var circuit_layer
+var battery_top_layer
+var battery_transition_left_layer
+var battery_transition_right_layer
+var battery_transition_down_layer
+var icon_layer
 
 # Ends of the batteries
 var positives = Array()
 var negatives = Array()
 
-func _init(rendering_layer, battery_top_rendering_layer, icon_rendering_layer, width: int, height: int) -> void:
-	self.rendering_layer = rendering_layer
-	self.battery_top_rendering_layer = battery_top_rendering_layer
-	self.icon_rendering_layer = icon_rendering_layer
+func _init(circuit_layer, battery_top_layer, battery_transition_left_layer, battery_transition_right_layer, battery_transition_down_layer, \
+			icon_layer, width: int, height: int) -> void:
+				
+	self.circuit_layer = circuit_layer
+	self.battery_top_layer = battery_top_layer
+	self.battery_transition_left_layer = battery_transition_left_layer
+	self.battery_transition_right_layer = battery_transition_right_layer
+	self.battery_transition_down_layer = battery_transition_down_layer
+	
+	self.icon_layer = icon_layer
 	var row = Array()
 	var locked_row = Array()
 	for x in range(width):
@@ -32,26 +42,48 @@ func _init(rendering_layer, battery_top_rendering_layer, icon_rendering_layer, w
 func render() -> void:
 	for positive in positives:
 		var tile = self.map[positive.y][positive.x]
-		self.rendering_layer.set_cell(Vector2i(positive.x, positive.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
+		self.circuit_layer.set_cell(Vector2i(positive.x, positive.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
 
 	for negative in negatives:
 		var tile = self.map[negative.y][negative.x]
-		self.rendering_layer.set_cell(Vector2i(negative.x, negative.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
+		self.circuit_layer.set_cell(Vector2i(negative.x, negative.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
 
 		
 	for y in range(len(self.map)):
 		for x in range(len(self.map[y])):
 			var tile = self.map[y][x]
 			if tile == null:
-				self.rendering_layer.erase_cell(Vector2i(x, y))
+				self.circuit_layer.erase_cell(Vector2i(x, y))
 			else:
-				self.rendering_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(tile.atlas_x, tile.atlas_y), tile.get_rotation())
-				if tile is BatteryPositiveBottom or tile is BatteryNegativeBottom:
-					self.battery_top_rendering_layer.set_cell(Vector2i(x, y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
-
-			
+				self.circuit_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(tile.atlas_x, tile.atlas_y), tile.get_rotation())
+				if tile is BatteryPositive or tile is BatteryNegative:
+					self.battery_top_layer.set_cell(Vector2i(x, y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
+							
+					self.battery_transition_left_layer.erase_cell(Vector2i(x, y))
+					self.battery_transition_right_layer.erase_cell(Vector2i(x, y))
+					self.battery_transition_down_layer.erase_cell(Vector2i(x, y))
+					
+					for ncon in get_neighbor_conections(x, y):
+						var nx = ncon[0]
+						var ny = ncon[1]
+						if nx - x == -1:
+							self.battery_transition_right_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(0, 0), get_rotation(1))
+						if nx - x == 1:
+							self.battery_transition_left_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(0, 0), get_rotation(3))
+						if ny - y == 1:
+							self.battery_transition_down_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(0, 0), get_rotation(0))
+							
 			if self.locked_table[y][x]:
-				self.icon_rendering_layer.set_cell(Vector2i(x, y), 1, Vector2i(0, 0))
+				self.icon_layer.set_cell(Vector2i(x, y), 1, Vector2i(0, 0))
+
+func get_rotation(rot: int):
+	match rot:
+		0: return 0
+		1: return TileSetAtlasSource.TRANSFORM_TRANSPOSE | TileSetAtlasSource.TRANSFORM_FLIP_H
+		2: return TileSetAtlasSource.TRANSFORM_FLIP_H | TileSetAtlasSource.TRANSFORM_FLIP_V
+		3: return TileSetAtlasSource.TRANSFORM_TRANSPOSE | TileSetAtlasSource.TRANSFORM_FLIP_V
+		_: return 0
+
 				
 func erase_tile(x: int, y:int):
 	edit_tile(x, y, null)
@@ -61,9 +93,9 @@ func edit_tile(input_x: int, input_y: int, input_tile, locked: bool = false):
 		self.map[input_y][input_x] = input_tile
 		self.locked_table[input_y][input_x] = locked
 		
-		if input_tile is BatteryPositiveBottom:
+		if input_tile is BatteryPositive:
 			positives.append(Vector2i(input_x, input_y))
-		if input_tile is BatteryNegativeBottom:
+		if input_tile is BatteryNegative:
 			negatives.append(Vector2i(input_x, input_y))
 		
 		update_grid_logic()
@@ -71,8 +103,11 @@ func edit_tile(input_x: int, input_y: int, input_tile, locked: bool = false):
 func update_grid_logic():
 	for y in range(len(self.map)):
 		for x in range(len(self.map[y])):
-			if self.map[y][x] != null:
-				self.map[y][x].source_id = 1 # defaulting to off
+			var tile = self.map[y][x]
+			if tile != null:
+				tile.source_id = 1 # defaulting to off
+			if tile is BatteryPositive:
+				tile.source_id = 0
 				
 	for positive in positives:
 		self.map[positive.y][positive.x].paths = Array()
@@ -97,6 +132,7 @@ func update_grid_logic():
 						min_resistance_paths.append(path)
 						min_resistance = resistance
 				
+		min_resistance_paths = remove_dups(min_resistance_paths)
 		if min_resistance != -1:
 			if min_resistance < self.map[positive.y][positive.x].path_resistance:
 				self.map[positive.y][positive.x].paths = min_resistance_paths.duplicate(true)
@@ -112,6 +148,13 @@ func update_grid_logic():
 				var x = tile[0]
 				var y = tile[1]
 				self.map[y][x].source_id = 0 # turn tiles on the path of least resistance on
+				
+func remove_dups(x: Array) -> Array:
+	var unique: Array = []
+	for item in x:
+		if not unique.has(item):
+			unique.append(item)
+	return unique
 
 func get_paths_of_least_resistance(positive: Vector2i, negative: Vector2i) -> Array:
 	var paths = find_all_routes(positive.x, positive.y, negative.x, negative.y)
@@ -153,13 +196,13 @@ func dfs(x: int, y: int, end_x: int, end_y: int, path: Array, visited: Dictionar
 		all_paths.append(path.duplicate(true))
 		return 
 	for neighbor in get_neighbor_conections(x, y):
-		var neighbor_x = neighbor[0]
-		var neighbor_y = neighbor[1]
-		var key = Vector2(neighbor_x, neighbor_y)
+		var nx = neighbor[0]
+		var ny = neighbor[1]
+		var key = Vector2(nx, ny)
 		if not visited.has(key):
 			visited[key] = true
-			path.append([neighbor_x, neighbor_y]) 
-			dfs(neighbor_x, neighbor_y, end_x, end_y, path, visited, all_paths)
+			path.append([nx, ny]) 
+			dfs(nx, ny, end_x, end_y, path, visited, all_paths)
 			path.pop_back()
 			visited.erase(key)
 			
@@ -170,13 +213,13 @@ func get_neighbor_conections(x: int, y: int) -> Array:
 		return neighbors
 		
 	for con in center.cons:
-		var neighbor_x = x + int(con.x)
-		var neighbor_y = y + int(con.y)
+		var nx = x + int(con.x)
+		var ny = y + int(con.y)
 		
-		if neighbor_x < 0 or neighbor_x >= self.width or neighbor_y < 0 or neighbor_y >= self.height:
+		if nx < 0 or nx >= self.width or ny < 0 or ny >= self.height:
 			continue
 			
-		var neighbor = self.map[neighbor_y][neighbor_x]
+		var neighbor = self.map[ny][nx]
 		if neighbor == null: continue
 		
 		var points_back = false
@@ -186,6 +229,6 @@ func get_neighbor_conections(x: int, y: int) -> Array:
 				break
 				
 		if points_back:
-			neighbors.append([neighbor_x, neighbor_y]) 
+			neighbors.append([nx, ny]) 
 			
 	return neighbors

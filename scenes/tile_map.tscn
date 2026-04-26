@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://cmgehutcs3ygq" path="res://assets/power_on.png" id="2_35kre"]
 [ext_resource type="Texture2D" uid="uid://biwvji4obtjhw" path="res://assets/background.png" id="2_f6fy2"]
 [ext_resource type="Texture2D" uid="uid://nrw87npiah31" path="res://assets/power_off.png" id="3_03na7"]
+[ext_resource type="Texture2D" uid="uid://bnxudcafxg45d" path="res://assets/transition_off.png" id="3_rtkix"]
+[ext_resource type="Texture2D" uid="uid://hmp3lrp6ccct" path="res://assets/transition_on.png" id="4_riyvs"]
 [ext_resource type="Texture2D" uid="uid://ckv2oqnu18g6j" path="res://assets/numbers.png" id="6_5ie0g"]
 [ext_resource type="Texture2D" uid="uid://ceoy81ejnpjbk" path="res://assets/frame.png" id="6_kvphj"]
 [ext_resource type="Texture2D" uid="uid://c684v8ccvsgnv" path="res://assets/lock.png" id="7_ac4p3"]
@@ -101,6 +103,21 @@ texture_region_size = Vector2i(24, 24)
 tile_size = Vector2i(24, 24)
 sources/0 = SubResource("TileSetAtlasSource_1n30v")
 sources/3 = SubResource("TileSetAtlasSource_kvphj")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_llxve"]
+texture = ExtResource("4_riyvs")
+texture_region_size = Vector2i(24, 24)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_alkp3"]
+texture = ExtResource("3_rtkix")
+texture_region_size = Vector2i(24, 24)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_350dj"]
+tile_size = Vector2i(24, 24)
+sources/1 = SubResource("TileSetAtlasSource_alkp3")
+sources/0 = SubResource("TileSetAtlasSource_llxve")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e185q"]
 texture = ExtResource("2_35kre")
@@ -332,6 +349,20 @@ position = Vector2(96, 24)
 [node name="BackgroundLayer" type="TileMapLayer" parent="." unique_id=329985550]
 tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAUAAAAAAAAAAAABAAAAAAAAAAAAAAABAAEAAAAAAAAAAAABAAIAAAAAAAAAAAABAAMAAAAAAAAAAAABAAQAAAAAAAAAAAABAAUAAAAAAAAAAAACAAAAAAAAAAAAAAACAAEAAAAAAAAAAAACAAIAAAAAAAAAAAACAAMAAAAAAAAAAAACAAQAAAAAAAAAAAACAAUAAAAAAAAAAAADAAAAAAAAAAAAAAADAAEAAAAAAAAAAAADAAIAAAAAAAAAAAADAAMAAAAAAAAAAAADAAQAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAAAAAAAAAAAAAAEAAEAAAAAAAAAAAAEAAIAAAAAAAAAAAAEAAMAAAAAAAAAAAAEAAQAAAAAAAAAAAAEAAUAAAAAAAAAAAAFAAAAAAAAAAAAAAAFAAEAAAAAAAAAAAAFAAIAAAAAAAAAAAAFAAMAAAAAAAAAAAAFAAQAAAAAAAAAAAAFAAUAAAAAAAAAAAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAGAAQAAAAAAAAAAAAGAAUAAAAAAAAAAAAHAAAAAAAAAAAAAAAHAAEAAAAAAAAAAAAHAAIAAAAAAAAAAAAHAAMAAAAAAAAAAAAHAAQAAAAAAAAAAAAHAAUAAAAAAAAAAAAIAAAAAAAAAAAAAAAIAAEAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAMAAAAAAAAAAAAIAAQAAAAAAAAAAAAIAAUAAAAAAAAAAAAJAAAAAAAAAAAAAAAJAAEAAAAAAAAAAAAJAAIAAAAAAAAAAAAJAAMAAAAAAAAAAAAJAAQAAAAAAAAAAAAJAAUAAAAAAAAAAAD+/wUAAwACAAQAAAD//wUAAwADAAQAAAD//wQAAwADAAQAAAD+/wQAAwABAAMAAAD+/wMAAwABAAMAAAD//wMAAwADAAQAAAD//wIAAwADAAQAAAD+/wIAAwABAAMAAAD+/wEAAwABAAMAAAD//wEAAwADAAQAAAD//wAAAwADAAQAAAD+/wAAAwACAAEAAAD8/wAAAwAAAAEAAAD8/wEAAwAAAAEAAAD8/wIAAwAAAAEAAAD8/wMAAwAAAAEAAAD8/wQAAwAAAAEAAAD8/wUAAwAAAAEAAAD8/wYAAwAAAAUAAAD9/wYAAwABAAUAAAD+/wYAAwABAAUAAAD//wYAAwADAAUAAAD8////AwAAAAAAAAD9////AwABAAAAAAD+////AwACAAAAAAD/////AwADAAAAAAAAAP//AwAEAAAAAAABAP//AwAFAAAAAAACAP//AwAGAAAAAAADAP//AwAHAAAAAAAEAP//AwAIAAAAAAAFAP//AwAJAAAAAAAGAP//AwAKAAAAAAAHAP//AwALAAAAAAAIAP//AwAJAAAAAAAJAP//AwAJAAAAAAAKAP//AwAMAAAAAAAKAAAAAwAMAAEAAAAKAAEAAwAMAAEAAAAKAAIAAwAMAAEAAAAKAAMAAwAMAAEAAAAKAAQAAwAMAAEAAAAKAAUAAwAMAAEAAAAKAAYAAwAMAAUAAAAJAAYAAwALAAUAAAAIAAYAAwALAAUAAAAHAAYAAwALAAUAAAAGAAYAAwALAAUAAAAFAAYAAwALAAUAAAAEAAYAAwALAAUAAAADAAYAAwALAAUAAAACAAYAAwALAAUAAAABAAYAAwALAAUAAAAAAAYAAwALAAUAAAD9/wUAAwABAAQAAAD9/wQAAwABAAMAAAD9/wMAAwABAAMAAAD9/wIAAwABAAMAAAD9/wEAAwABAAMAAAD9/wAAAwABAAEAAAA=")
 tile_set = SubResource("TileSet_35kre")
+
+[node name="BatteryTransitionLayer" type="Node" parent="." unique_id=162210377]
+
+[node name="Left" type="TileMapLayer" parent="BatteryTransitionLayer" unique_id=1094858110]
+position = Vector2(96, 24)
+tile_set = SubResource("TileSet_350dj")
+
+[node name="Down" type="TileMapLayer" parent="BatteryTransitionLayer" unique_id=1954447245]
+position = Vector2(96, 24)
+tile_set = SubResource("TileSet_350dj")
+
+[node name="Right" type="TileMapLayer" parent="BatteryTransitionLayer" unique_id=809393590]
+position = Vector2(96, 24)
+tile_set = SubResource("TileSet_350dj")
 
 [node name="CircuitLayer" type="TileMapLayer" parent="." unique_id=2079117293]
 tile_set = SubResource("TileSet_anah5")

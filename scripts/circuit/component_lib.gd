@@ -59,6 +59,19 @@ func remove_tile_from_parts(new_tile) -> bool:
 				
 	return false
 			
+func copy_tile(x, y) -> CircuitTile:
+	if self.map[y][x] != null and self.tile_counts[y*self.width+x] > 0:
+		return self.map[y][x].duplicate()
+	return null
+	
+func get_count(other: CircuitTile) -> int:
+	for i in range(len(self.tiles)):
+		var tile = self.tiles[i]
+		if tile.equals(other):
+			return self.tile_counts[i]
+			
+	return 0
+			
 func render() -> void:
 	var x = 0
 	var y = 0

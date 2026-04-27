@@ -1,4 +1,5 @@
-res://scripts/circuit/component_lib.gd
+res://scripts/label.gd
 res://scripts/main.gd
 res://scenes/main.tscn
 res://scripts/circuit/circuit_tile.gd
+res://scripts/circuit/component_lib.gd

@@ -52,6 +52,8 @@ func duplicate() -> CircuitTile:
 	return get_script().new(self.rot)
 	
 func equals(other: CircuitTile) -> bool:
+	if other == null:
+		return false
 	if self.get_script() == other.get_script() and self.rot == other.rot:
 		return true
 	return false

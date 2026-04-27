@@ -50,3 +50,8 @@ func duplicate() -> CircuitTile:
 	for con in self.cons:
 		unrotated_cons.append(con.rotated(deg_to_rad(-90*self.rot)))
 	return get_script().new(self.rot)
+	
+func equals(other: CircuitTile) -> bool:
+	if self.get_script() == other.get_script() and self.rot == other.rot:
+		return true
+	return false

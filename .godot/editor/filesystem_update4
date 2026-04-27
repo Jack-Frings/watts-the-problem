@@ -1,8 +1,4 @@
-res://scenes/battery_wattage_label.tscn
-res://scenes/battery_wattage_label.gdshader
-res://scenes/label.gd
-res://scenes/main.tscn
-res://scripts/label.gd
-res://scripts/circuit/battery_negative.gd
-res://scripts/circuit/circuit_grid.gd
+res://scripts/circuit/component_lib.gd
 res://scripts/main.gd
+res://scenes/main.tscn
+res://scripts/circuit/circuit_tile.gd

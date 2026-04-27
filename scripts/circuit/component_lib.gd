@@ -4,13 +4,26 @@ var origin: Vector2i
 var map = Array()
 var width: int 
 var height: int
-var rendering_layer
 
-func _init(rendering_layer, origin: Vector2i, width: int, height: int) -> void:
-	self.rendering_layer = rendering_layer
+var circuit_layer
+var icon_layer
+
+var tiles: Array
+var tile_counts: Array
+
+func _init(circuit_layer, icon_layer, origin: Vector2i, width: int, height: int, tiles: Array, tile_counts: Array, root_node) -> void:
+	self.circuit_layer = circuit_layer
+	self.icon_layer = icon_layer
 	self.origin = origin
 	self.width = width 
 	self.height = height
+	
+	self.tiles = tiles
+	self.tile_counts = tile_counts
+	
+	if len(self.tiles) != len(self.tile_counts):
+		push_error("Component Lib Init: tiles length must equal tile_counts length")
+		root_node.get_tree().quit()
 	
 	var row = Array()
 	for x in range(width):
@@ -18,22 +31,44 @@ func _init(rendering_layer, origin: Vector2i, width: int, height: int) -> void:
 	for y in range(height):
 		self.map.append(row.duplicate(true))
 		
-	# Connectors to Copy
-	edit_tile(0, 0, StraightConnector.new(0))
-	edit_tile(1, 0, RightAngleConnector.new(0))
-	edit_tile(0, 1, ThreeWayConnector.new(0))
-	edit_tile(1, 1, FourWayConnector.new(0))
-	edit_tile(0, 2, Resistor.new(0))
-	edit_tile(1, 2, Diode.new(0))
+	var x = 0
+	var y = 0
+	for tile in self.tiles:
+		self.map[y][x] = tile
+		x += 1
+		if x > width-1:
+			x = 0
+			y += 1
 		
-func edit_tile(input_x: int, input_y: int, input_tile):
-	self.map[input_y][input_x] = input_tile
-	
-func render() -> void:
-	for y in range(len(self.map)):
-		for x in range(len(self.map[y])):
-			var tile = self.map[y][x]
-			if self.map[y][x] == null:
-				self.rendering_layer.erase_cell(Vector2i(origin.x + x, origin.y + y))
+func add_tile_to_parts(tile: CircuitTile) -> void:
+	if tile == null:
+		return
+	for i in range(len(self.tiles)):
+		if self.tiles[i].equals(tile):
+			self.tile_counts[i] += 1
+			
+func remove_tile_from_parts(new_tile) -> bool:
+	for i in range(len(self.tiles)):
+		var tile = self.tiles[i]
+		if tile.equals(new_tile):
+			if self.tile_counts[i] > 0:
+				self.tile_counts[i] -= 1
+				return true
 			else:
-				self.rendering_layer.set_cell(Vector2i(origin.x + x, origin.y + y), tile.source_id, Vector2i(tile.atlas_x, tile.atlas_y), tile.get_rotation())
+				return false
+				
+	return false
+			
+func render() -> void:
+	var x = 0
+	var y = 0
+	for i in range(len(self.tiles)):
+		var tile = self.tiles[i]
+		var count = self.tile_counts[i]
+		self.circuit_layer.set_cell(Vector2i(origin.x+x, origin.y+y), tile.source_id, Vector2i(tile.atlas_x, tile.atlas_y), tile.get_rotation())
+		self.icon_layer.set_cell(Vector2i(origin.x+x, origin.y+y), 0, Vector2i(count % 10, count / 10))
+		
+		x += 1
+		if x > width-1:
+			x = 0
+			y += 1

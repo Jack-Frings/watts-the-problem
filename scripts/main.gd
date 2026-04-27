@@ -12,12 +12,15 @@ extends Node
 
 var wattage_label_scene = preload("res://scenes/battery_wattage_label.tscn")
 
-var straight_connector_count = 90
-var right_angle_connector_count = 90
-var three_way_connector_count = 90
-var four_way_connector_count = 90
-var resistor_count = 90 
-var diode_count = 90
+var tiles: Array = [StraightConnector.new(0), StraightConnector.new(1), \
+					RightAngleConnector.new(0), RightAngleConnector.new(1), \
+					RightAngleConnector.new(2), RightAngleConnector.new(3), \
+					ThreeWayConnector.new(0), Resistor.new(0)]
+					
+var tile_counts = [3, 5, \
+					2, 2, \
+					1, 4, \
+					1, 10]
 
 var circuit_grid
 var component_lib
@@ -49,10 +52,10 @@ func _ready() -> void:
 									battery_transition_left_layer, battery_transition_right_layer, battery_transition_down_layer, \
 									icon_layer, circuit_width, circuit_height, wattage_label_scene, self)
 									
-	component_lib = ComponentLib.new(circuit_layer, component_lib_origin, component_lib_width, component_lib_height)
+	component_lib = ComponentLib.new(circuit_layer, icon_layer, component_lib_origin, component_lib_width, component_lib_height, \
+										tiles, tile_counts, self)
 			
 	circuit_grid.edit_tile(4, 3, BatteryPositive.new(0), true)
-
 	circuit_grid.edit_tile(3, 5, BatteryNegative.new(0, 1.7), true)
 	circuit_grid.edit_tile(0, 3, BatteryNegative.new(0, 3.3), true)
 	circuit_grid.edit_tile(8, 3, BatteryNegative.new(0, 3.3), true)
@@ -63,24 +66,11 @@ func _process(delta: float) -> void:
 	player_action()
 	circuit_grid.render()
 	component_lib.render()
-	
-	display_part_count(0, 0, straight_connector_count)
-	display_part_count(1, 0, right_angle_connector_count)
-	display_part_count(0, 1, three_way_connector_count)
-	display_part_count(1, 1, four_way_connector_count)
-	display_part_count(0, 2, resistor_count)
-	display_part_count(1, 2, diode_count)
-		
-func display_part_count(x: int, y: int, count: int):
-	icon_layer.set_cell(Vector2i(component_lib_origin.x+x, component_lib_origin.y+y), 0, Vector2i(count % 10, count / 10))
 
 func player_action() -> void:
 	if Input.is_action_pressed("erase") and p_workspace == WORKSPACE.CIRCUIT:
-		add_tile_to_parts(circuit_grid.map[py][px])
+		component_lib.add_tile_to_parts(circuit_grid.map[py][px])
 		circuit_grid.erase_tile(px, py)
-	
-	if Input.is_action_just_pressed("rotate") and p_tile != null:
-		p_tile.rot_cw()
 		
 	if Input.is_action_pressed("select"):
 		if p_workspace ==  WORKSPACE.COMPONENT_LIB:
@@ -88,8 +78,8 @@ func player_action() -> void:
 				p_tile = component_lib.map[py - component_lib_origin.y][px - component_lib_origin.x].duplicate()
 		elif p_workspace == WORKSPACE.CIRCUIT:
 			if not circuit_grid.locked_table[py][px]:
-				if remove_tile_from_parts(p_tile):
-					add_tile_to_parts(circuit_grid.map[py][px])
+				if component_lib.remove_tile_from_parts(p_tile):
+					component_lib.add_tile_to_parts(circuit_grid.map[py][px])
 					circuit_grid.edit_tile(px, py, p_tile.duplicate())
 				
 	if Input.is_action_just_pressed("drop"):
@@ -97,43 +87,6 @@ func player_action() -> void:
 		
 	if Input.is_action_just_pressed("escape"):
 		get_tree().quit()
-						
-func add_tile_to_parts(tile: CircuitTile) -> void:
-	if tile is StraightConnector: straight_connector_count += 1
-	elif tile is RightAngleConnector: right_angle_connector_count += 1 
-	elif tile is ThreeWayConnector: three_way_connector_count += 1
-	elif tile is FourWayConnector: four_way_connector_count += 1
-	elif tile is Resistor: resistor_count += 1
-	elif tile is Diode: diode_count += 1
-	else: pass
-	
-func remove_tile_from_parts(tile) -> bool:
-	if tile is StraightConnector: 
-		if straight_connector_count > 0:
-			straight_connector_count -= 1
-			return true
-	elif tile is RightAngleConnector:
-		if right_angle_connector_count > 0:
-			right_angle_connector_count -= 1
-			return true
-	elif tile is ThreeWayConnector:
-		if three_way_connector_count > 0:
-			three_way_connector_count -= 1
-			return true
-	elif tile is FourWayConnector:
-		if four_way_connector_count > 0:
-			four_way_connector_count -= 1
-			return true
-	elif tile is Resistor:
-		if resistor_count > 0:
-			resistor_count -= 1
-			return true
-	elif tile is Diode:
-		if diode_count > 0:
-			diode_count -= 1
-			return true
-			
-	return false
 
 func player_movement(delta: float) -> void:
 	cursor_icon_shift_time += delta

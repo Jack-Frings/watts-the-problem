@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://5k6t0x8j28tx"]
+
+[ext_resource type="FontFile" uid="uid://bix71i6b0ccka" path="res://assets/upheavtt.ttf" id="1_xs1jh"]
+[ext_resource type="Script" uid="uid://dl4jx4qix6o6d" path="res://scripts/label.gd" id="2_jgmij"]
+
+[node name="BatteryWattageLabel" type="Node2D" unique_id=1853437015]
+
+[node name="Label" type="Label" parent="." unique_id=1176252974]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -13.0
+offset_top = -2.5
+offset_right = 13.0
+offset_bottom = 2.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.78431374)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 1
+theme_override_fonts/font = ExtResource("1_xs1jh")
+theme_override_font_sizes/font_size = 5
+text = "1.5/3.5"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("2_jgmij")

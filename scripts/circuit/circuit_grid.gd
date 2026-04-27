@@ -6,6 +6,8 @@ var locked_table = Array()
 var width: int 
 var height: int
 
+var root_node
+
 var circuit_layer
 var battery_top_layer
 var battery_transition_left_layer
@@ -17,14 +19,20 @@ var icon_layer
 var positives = Array()
 var negatives = Array()
 
+var wattage_label_scene
+var wattage_labels = Array()
+
 func _init(circuit_layer, battery_top_layer, battery_transition_left_layer, battery_transition_right_layer, battery_transition_down_layer, \
-			icon_layer, width: int, height: int) -> void:
+			icon_layer, width: int, height: int, wattage_label_scene, root_node) -> void:
 				
 	self.circuit_layer = circuit_layer
 	self.battery_top_layer = battery_top_layer
 	self.battery_transition_left_layer = battery_transition_left_layer
 	self.battery_transition_right_layer = battery_transition_right_layer
 	self.battery_transition_down_layer = battery_transition_down_layer
+	self.wattage_label_scene =  wattage_label_scene
+	
+	self.root_node = root_node
 	
 	self.icon_layer = icon_layer
 	var row = Array()
@@ -95,8 +103,12 @@ func edit_tile(input_x: int, input_y: int, input_tile, locked: bool = false):
 		
 		if input_tile is BatteryPositive:
 			positives.append(Vector2i(input_x, input_y))
+			
 		if input_tile is BatteryNegative:
 			negatives.append(Vector2i(input_x, input_y))
+			self.wattage_labels.append(wattage_label_scene.instantiate())
+			self.root_node.add_child(self.wattage_labels[-1])
+			self.wattage_labels[-1].global_position = Vector2(109 + 24*input_x, 12 + 24*input_y)
 		
 		update_grid_logic()
 			
@@ -148,6 +160,17 @@ func update_grid_logic():
 				var x = tile[0]
 				var y = tile[1]
 				self.map[y][x].source_id = 0 # turn tiles on the path of least resistance on
+						
+	for i in range(len(self.negatives)):
+		var negative = self.map[self.negatives[i].y][self.negatives[i].x]
+		negative.enabled = abs(negative.desired_wattage - negative.wattage) < 0.1
+		
+		self.wattage_labels[i].get_node("Label").text = "%.1f/%.1f" % [negative.wattage, negative.desired_wattage]
+		if negative.enabled:
+			self.wattage_labels[i].get_node("Label").add_theme_color_override("font_color", negative.enabled_color)
+		else:
+			self.wattage_labels[i].get_node("Label").add_theme_color_override("font_color", negative.disabled_color)
+
 				
 func remove_dups(x: Array) -> Array:
 	var unique: Array = []

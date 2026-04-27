@@ -10,6 +10,8 @@ extends Node
 @onready var selection_layer = $"TileMap/SelectionLayer"
 @onready var icon_layer =  $"TileMap/IconLayer"
 
+var wattage_label_scene = preload("res://scenes/battery_wattage_label.tscn")
+
 var straight_connector_count = 90
 var right_angle_connector_count = 90
 var three_way_connector_count = 90
@@ -45,14 +47,15 @@ var cursor_icon_id = 0
 func _ready() -> void:
 	circuit_grid = CircuitGrid.new(circuit_layer, battery_top_layer, \
 									battery_transition_left_layer, battery_transition_right_layer, battery_transition_down_layer, \
-									icon_layer, circuit_width, circuit_height)
+									icon_layer, circuit_width, circuit_height, wattage_label_scene, self)
+									
 	component_lib = ComponentLib.new(circuit_layer, component_lib_origin, component_lib_width, component_lib_height)
 			
 	circuit_grid.edit_tile(4, 3, BatteryPositive.new(0), true)
 
-	circuit_grid.edit_tile(3, 5, BatteryNegative.new(0), true)
-	circuit_grid.edit_tile(0, 3, BatteryNegative.new(0), true)
-	circuit_grid.edit_tile(8, 3, BatteryNegative.new(0), true)
+	circuit_grid.edit_tile(3, 5, BatteryNegative.new(0, 1.7), true)
+	circuit_grid.edit_tile(0, 3, BatteryNegative.new(0, 3.3), true)
+	circuit_grid.edit_tile(8, 3, BatteryNegative.new(0, 3.3), true)
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -67,15 +70,9 @@ func _process(delta: float) -> void:
 	display_part_count(1, 1, four_way_connector_count)
 	display_part_count(0, 2, resistor_count)
 	display_part_count(1, 2, diode_count)
-	
-	for negative in circuit_grid.negatives:
-		display_wattage(negative.x, negative.y-1, circuit_grid.map[negative.y][negative.x].wattage)
 		
 func display_part_count(x: int, y: int, count: int):
 	icon_layer.set_cell(Vector2i(component_lib_origin.x+x, component_lib_origin.y+y), 0, Vector2i(count % 10, count / 10))
-	
-func display_wattage(x: int, y: int, count: int):
-	icon_layer.set_cell(Vector2i(x, y), 0, Vector2i(count % 10, count / 10))
 
 func player_action() -> void:
 	if Input.is_action_pressed("erase") and p_workspace == WORKSPACE.CIRCUIT:

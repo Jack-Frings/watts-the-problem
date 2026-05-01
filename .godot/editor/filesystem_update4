@@ -1,5 +1,6 @@
-res://scripts/label.gd
-res://scripts/main.gd
 res://scenes/main.tscn
-res://scripts/circuit/circuit_tile.gd
+res://levels.json
+res://scripts/level_machine.gd
+res://scripts/main.gd
+res://scripts/circuit/circuit_grid.gd
 res://scripts/circuit/component_lib.gd

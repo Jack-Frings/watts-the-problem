@@ -24,6 +24,7 @@ var tile_counts =  [3, 5, \
 
 var circuit_grid
 var component_lib
+var level_machine
 
 var circuit_width = 10
 var circuit_height = 6
@@ -58,14 +59,15 @@ func _ready() -> void:
 									
 	component_lib = ComponentLib.new(circuit_layer, icon_layer, component_lib_origin, component_lib_width, component_lib_height, \
 										tiles, tile_counts, self)
+										
+	level_machine = LevelMachine.new(0)
+	level_machine.level_setup(circuit_grid, component_lib)
 			
-	circuit_grid.edit_tile(4, 3, BatteryPositive.new(0), true)
-	circuit_grid.edit_tile(3, 5, BatteryNegative.new(0, 1.7), true)
-	circuit_grid.edit_tile(0, 3, BatteryNegative.new(0, 3.3), true)
-	circuit_grid.edit_tile(8, 3, BatteryNegative.new(0, 3.3), true)
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if circuit_grid.get_winning_status():
+		level_machine.next_level(circuit_grid, component_lib)
 	player_action()
 	circuit_grid.render()
 	component_lib.render()
@@ -108,7 +110,6 @@ func cursor_render(delta: float) -> void:
 	else:
 		selection_layer.modulate = Color(0.5, 0.5, 0.5, 0.5)
 		self.selection_layer.set_cell(Vector2i(px, py),2, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon
-
 	
 
 func player_action() -> void:
@@ -117,7 +118,7 @@ func player_action() -> void:
 		component_lib.add_tile_to_parts(tile)
 		circuit_grid.erase_tile(px, py)
 		
-		if p_tile == null: p_tile = tile
+		if p_tile == null and contains(tiles, tile): p_tile = tile
 		
 	if Input.is_action_pressed("select"):
 		if p_workspace ==  WORKSPACE.COMPONENT_LIB:
@@ -131,5 +132,14 @@ func player_action() -> void:
 					if component_lib.get_count(p_tile) <= 0:
 						p_tile = null
 		
-	if Input.is_action_just_pressed("escape"):
+	if Input.is_action_pressed("escape"):
 		get_tree().quit()
+		
+	if Input.is_action_just_pressed("drop"):
+		p_tile = null
+		
+func contains(tiles, other):
+	for tile in tiles:
+		if tile.equals(other):
+			return true
+	return false

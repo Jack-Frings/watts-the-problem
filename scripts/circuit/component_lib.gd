@@ -39,6 +39,26 @@ func _init(circuit_layer, icon_layer, origin: Vector2i, width: int, height: int,
 		if x > width-1:
 			x = 0
 			y += 1
+			
+func refresh(tiles: Array, tile_counts: Array) -> void:
+	self.tiles = tiles
+	self.tile_counts = tile_counts
+	
+	self.map = Array()
+	var row = Array()
+	for x in range(width):
+		row.append(null)
+	for y in range(height):
+		self.map.append(row.duplicate(true))
+		
+	var x = 0
+	var y = 0
+	for tile in self.tiles:
+		self.map[y][x] = tile
+		x += 1
+		if x > width-1:
+			x = 0
+			y += 1
 		
 func add_tile_to_parts(tile: CircuitTile) -> void:
 	if tile == null:

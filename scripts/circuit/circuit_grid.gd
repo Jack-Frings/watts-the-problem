@@ -35,6 +35,7 @@ func _init(circuit_layer, battery_top_layer, battery_transition_left_layer, batt
 	self.root_node = root_node
 	
 	self.icon_layer = icon_layer
+	
 	var row = Array()
 	var locked_row = Array()
 	for x in range(width):
@@ -46,6 +47,32 @@ func _init(circuit_layer, battery_top_layer, battery_transition_left_layer, batt
 		
 	self.width = width 
 	self.height = height
+	
+func get_winning_status() -> bool:
+	for negative in negatives:
+		if not self.map[negative.y][negative.x].enabled:
+			return false
+	return true
+	
+func refresh() -> void:
+	self.map = Array()
+	self.locked_table = Array()
+	self.positives = Array()
+	self.negatives = Array()
+	
+	var row = Array()
+	var locked_row = Array()
+	for x in range(width):
+		row.append(null)
+		locked_row.append(false)
+	for y in range(height):
+		self.map.append(row.duplicate(true))
+		self.locked_table.append(locked_row.duplicate(true))
+		
+	for scene in wattage_labels:
+		scene.queue_free()
+		
+	wattage_labels = Array()
 	
 func render() -> void:
 	for positive in positives:
@@ -60,16 +87,20 @@ func render() -> void:
 	for y in range(len(self.map)):
 		for x in range(len(self.map[y])):
 			var tile = self.map[y][x]
+			self.battery_transition_left_layer.erase_cell(Vector2i(x, y))
+			self.battery_transition_right_layer.erase_cell(Vector2i(x, y))
+			self.battery_transition_down_layer.erase_cell(Vector2i(x, y))
+			self.battery_top_layer.erase_cell(Vector2i(x, y))
+			self.icon_layer.erase_cell(Vector2i(x, y))
+				
 			if tile == null:
 				self.circuit_layer.erase_cell(Vector2i(x, y))
 			else:
 				self.circuit_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(tile.atlas_x, tile.atlas_y), tile.get_rotation())
+				
+				
 				if tile is BatteryPositive or tile is BatteryNegative:
 					self.battery_top_layer.set_cell(Vector2i(x, y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
-							
-					self.battery_transition_left_layer.erase_cell(Vector2i(x, y))
-					self.battery_transition_right_layer.erase_cell(Vector2i(x, y))
-					self.battery_transition_down_layer.erase_cell(Vector2i(x, y))
 					
 					for ncon in get_neighbor_conections(x, y):
 						var nx = ncon[0]

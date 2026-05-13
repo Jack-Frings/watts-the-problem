@@ -3,6 +3,11 @@
 [ext_resource type="PackedScene" uid="uid://d5ki2x65hdma" path="res://scenes/tile_map.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://bcoo3kuuek2r" path="res://scripts/main.gd" id="1_sugp2"]
 [ext_resource type="AudioStream" uid="uid://bjdhlc3dlakhp" path="res://assets/background_track.wav" id="3_sugp2"]
+[ext_resource type="Texture2D" uid="uid://8cysw4v3q6h7" path="res://assets/level_complete.png" id="4_jyhfs"]
+[ext_resource type="Script" uid="uid://b4lgs3ad640ja" path="res://scenes/hud.gd" id="4_tipki"]
+[ext_resource type="Texture2D" uid="uid://t1wytp5v25yu" path="res://assets/normal_button.png" id="5_o6xl0"]
+[ext_resource type="Texture2D" uid="uid://bvhva0qth1wbl" path="res://assets/pressed_button.png" id="6_tipki"]
+[ext_resource type="Texture2D" uid="uid://cmskpn2m35lqk" path="res://assets/hovered_button.png" id="7_85g3d"]
 
 [node name="Main" type="Node" unique_id=1277025654]
 script = ExtResource("1_sugp2")
@@ -12,3 +17,53 @@ script = ExtResource("1_sugp2")
 [node name="BackgroundTrackPlayer" type="AudioStreamPlayer" parent="." unique_id=830608492]
 stream = ExtResource("3_sugp2")
 autoplay = true
+
+[node name="HUD" type="Control" parent="." unique_id=1626659396]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 152.0
+offset_top = 100.0
+offset_right = 192.0
+offset_bottom = 140.0
+script = ExtResource("4_tipki")
+
+[node name="Shader" type="ColorRect" parent="HUD" unique_id=1857908220]
+z_index = 3
+layout_mode = 0
+offset_left = -152.0
+offset_top = -100.0
+offset_right = 208.0
+offset_bottom = 92.0
+color = Color(0, 0, 0, 0.59607846)
+
+[node name="LevelComplete" type="TextureRect" parent="HUD" unique_id=1270128451]
+z_index = 4
+layout_mode = 0
+offset_left = -72.0
+offset_top = -75.0
+offset_right = 128.0
+offset_bottom = -25.0
+texture = ExtResource("4_jyhfs")
+
+[node name="LevelButton" type="TextureButton" parent="HUD" unique_id=1398160695]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 36.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("5_o6xl0")
+texture_pressed = ExtResource("6_tipki")
+texture_hover = ExtResource("7_85g3d")
+stretch_mode = 3
+
+[connection signal="level_completed" from="." to="HUD" method="_on_main_level_completed"]
+[connection signal="button_up" from="HUD/LevelButton" to="." method="_on_level_button_button_up"]
+[connection signal="pressed" from="HUD/LevelButton" to="HUD" method="_on_level_button_pressed"]

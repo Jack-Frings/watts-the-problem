@@ -11,7 +11,7 @@ var icon_layer
 var tiles: Array
 var tile_counts: Array
 
-func _init(circuit_layer, icon_layer, origin: Vector2i, width: int, height: int, tiles: Array, tile_counts: Array, root_node) -> void:
+func _init(circuit_layer, icon_layer, origin: Vector2i, width: int, height: int, root_node) -> void:
 	self.circuit_layer = circuit_layer
 	self.icon_layer = icon_layer
 	self.origin = origin
@@ -31,14 +31,7 @@ func _init(circuit_layer, icon_layer, origin: Vector2i, width: int, height: int,
 	for y in range(height):
 		self.map.append(row.duplicate(true))
 		
-	var x = 0
-	var y = 0
-	for tile in self.tiles:
-		self.map[y][x] = tile
-		x += 1
-		if x > width-1:
-			x = 0
-			y += 1
+	
 			
 func refresh(tiles: Array, tile_counts: Array) -> void:
 	self.tiles = tiles

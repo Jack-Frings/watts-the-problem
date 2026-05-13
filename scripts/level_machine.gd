@@ -44,13 +44,17 @@ func get_tile(tile) -> CircuitTile:
 	
 func next_level(circuit_grid: CircuitGrid, comp_lib: ComponentLib):
 	self.cur = str((int)(self.cur) + 1)
-	level_setup(circuit_grid, comp_lib)
+	if self.cur in self.levels:
+		level_setup(circuit_grid, comp_lib)
+		return true
+	
+	return false
 
 func get_level() -> String:
 	return self.cur
 	
 func read_level_json() -> Dictionary:
-	var path = "res://levels.json"
+	var path = "res://cur.json"
 	if not FileAccess.file_exists(path):
 		push_error("File not found: %s" % path)
 		return {}

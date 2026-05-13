@@ -12,16 +12,6 @@ extends Node
 
 var wattage_label_scene = preload("res://scenes/battery_wattage_label.tscn")
 
-var tiles: Array = [StraightConnector.new(0), StraightConnector.new(1), \
-					RightAngleConnector.new(0), RightAngleConnector.new(1), \
-					RightAngleConnector.new(2), RightAngleConnector.new(3), \
-					ThreeWayConnector.new(0), Resistor.new(0)]
-					
-var tile_counts =  [3, 5, \
-					2, 2, \
-					1, 4, \
-					1, 10]
-
 var circuit_grid
 var component_lib
 var level_machine
@@ -52,13 +42,14 @@ var cursor_icon_shift_time = 0.0
 var cursor_icon_shift_timer = 0.5
 var cursor_icon_id = 0
 
+signal level_completed
+
 func _ready() -> void:
 	circuit_grid = CircuitGrid.new(circuit_layer, battery_top_layer, \
 									battery_transition_left_layer, battery_transition_right_layer, battery_transition_down_layer, \
 									icon_layer, circuit_width, circuit_height, wattage_label_scene, self)
 									
-	component_lib = ComponentLib.new(circuit_layer, icon_layer, component_lib_origin, component_lib_width, component_lib_height, \
-										tiles, tile_counts, self)
+	component_lib = ComponentLib.new(circuit_layer, icon_layer, component_lib_origin, component_lib_width, component_lib_height, self)
 										
 	level_machine = LevelMachine.new(0)
 	level_machine.level_setup(circuit_grid, component_lib)
@@ -66,12 +57,13 @@ func _ready() -> void:
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if circuit_grid.get_winning_status():
-		level_machine.next_level(circuit_grid, component_lib)
+	var winning_status = circuit_grid.get_winning_status()
+	if winning_status:
+		level_completed.emit()
 	player_action()
 	circuit_grid.render()
 	component_lib.render()
-	cursor_render(delta)
+	cursor_render(delta, winning_status)
 	
 func _input(event):
 	var opx = px
@@ -96,30 +88,29 @@ func _input(event):
 		if opx != px or opy != py or op_workspace != p_workspace:
 			self.selection_layer.erase_cell(Vector2i(opx, opy))
 		
-func cursor_render(delta: float) -> void:
+func cursor_render(delta: float, winning_status: bool) -> void:
 	cursor_icon_shift_time += delta
 	if cursor_icon_shift_time > cursor_icon_shift_timer:
 		cursor_icon_shift_time = 0.0
 		if cursor_icon_id == 0: cursor_icon_id = 1
 		elif cursor_icon_id == 1: cursor_icon_id = 0
 		
-		
-	if p_tile == null or p_workspace == WORKSPACE.COMPONENT_LIB:
-		selection_layer.modulate = Color(1, 1, 1, 1)
-		self.selection_layer.set_cell(Vector2i(px, py), cursor_icon_id, Vector2i(0, 0)) # selection-box icon
+	if not winning_status:
+		if p_tile == null or p_workspace == WORKSPACE.COMPONENT_LIB:
+			selection_layer.modulate = Color(1, 1, 1, 1)
+			self.selection_layer.set_cell(Vector2i(px, py), cursor_icon_id, Vector2i(0, 0)) # selection-box icon
+		else:
+			selection_layer.modulate = Color(0.5, 0.5, 0.5, 0.5)
+			self.selection_layer.set_cell(Vector2i(px, py),2, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon
 	else:
-		selection_layer.modulate = Color(0.5, 0.5, 0.5, 0.5)
-		self.selection_layer.set_cell(Vector2i(px, py),2, Vector2i(p_tile.atlas_x, p_tile.atlas_y), p_tile.get_rotation()) # grayed-out tile icon
-	
+		self.selection_layer.erase_cell(Vector2i(px, py))
 
 func player_action() -> void:
 	if Input.is_action_pressed("erase") and p_workspace == WORKSPACE.CIRCUIT:
 		var tile = circuit_grid.map[py][px]
 		component_lib.add_tile_to_parts(tile)
 		circuit_grid.erase_tile(px, py)
-		
-		if p_tile == null and contains(tiles, tile): p_tile = tile
-		
+				
 	if Input.is_action_pressed("select"):
 		if p_workspace ==  WORKSPACE.COMPONENT_LIB:
 			p_tile = component_lib.copy_tile(px-component_lib_origin.x, py-component_lib_origin.y)
@@ -137,9 +128,8 @@ func player_action() -> void:
 		
 	if Input.is_action_just_pressed("drop"):
 		p_tile = null
-		
-func contains(tiles, other):
-	for tile in tiles:
-		if tile.equals(other):
-			return true
-	return false
+
+func _on_level_button_button_up() -> void:
+	var transitioned = level_machine.next_level(circuit_grid, component_lib)
+	if not transitioned:
+		get_tree().change_scene_to_file("res://scenes/credits.tscn")

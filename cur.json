@@ -1,0 +1,24 @@
+{
+"0": {
+	"component_lib": [
+		{"type": "StraightConnector", "rot": 0, "count": 90},
+		{"type": "StraightConnector", "rot": 1, "count": 90},
+		{"type": "RightAngleConnector", "rot": 0, "count": 90},
+		{"type": "RightAngleConnector", "rot": 1, "count": 90},
+		{"type": "RightAngleConnector", "rot": 2, "count": 90},
+		{"type": "RightAngleConnector", "rot": 3, "count": 90},
+		{"type": "FourWayConnector", "rot": 0, "count": 90},
+		{"type": "Resistor", "rot": 0, "count": 90},
+		{"type": "Resistor", "rot": 1, "count": 90},
+
+	],
+	"circuit": [
+		{"x": 1, "y": 2, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 3, "y": 1, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 7, "y": 3, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 0, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+		{"x": 2, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+		{"x": 3, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+	]
+},
+}

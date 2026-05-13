@@ -77,16 +77,15 @@ func refresh() -> void:
 func render() -> void:
 	for positive in positives:
 		var tile = self.map[positive.y][positive.x]
-		self.circuit_layer.set_cell(Vector2i(positive.x, positive.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
 
 	for negative in negatives:
 		var tile = self.map[negative.y][negative.x]
-		self.circuit_layer.set_cell(Vector2i(negative.x, negative.y-1), tile.source_id, Vector2i(tile.top_atlas_x, tile.top_atlas_y), tile.get_rotation())
 
 		
 	for y in range(len(self.map)):
 		for x in range(len(self.map[y])):
 			var tile = self.map[y][x]
+			self.battery_top_layer.erase_cell(Vector2i(x, y-1))
 			self.battery_transition_left_layer.erase_cell(Vector2i(x, y))
 			self.battery_transition_right_layer.erase_cell(Vector2i(x, y))
 			self.battery_transition_down_layer.erase_cell(Vector2i(x, y))
@@ -114,6 +113,7 @@ func render() -> void:
 							
 			if self.locked_table[y][x]:
 				self.icon_layer.set_cell(Vector2i(x, y), 1, Vector2i(0, 0))
+				
 
 func get_rotation(rot: int):
 	match rot:
@@ -139,6 +139,7 @@ func edit_tile(input_x: int, input_y: int, input_tile, locked: bool = false):
 			negatives.append(Vector2i(input_x, input_y))
 			self.wattage_labels.append(wattage_label_scene.instantiate())
 			self.root_node.add_child(self.wattage_labels[-1])
+			self.wattage_labels[-1].z_index = 1
 			self.wattage_labels[-1].global_position = Vector2(109 + 24*input_x, 12 + 24*input_y)
 		
 		update_grid_logic()
@@ -183,7 +184,7 @@ func update_grid_logic():
 				for path in min_resistance_paths:
 					var x = path[-1][0]
 					var y = path[-1][1]
-					self.map[y][x].wattage += (self.map[positive.y][positive.x].voltage**2) / (float) (min_resistance*min_resistance_paths.size())
+					self.map[y][x].wattage += (min_resistance) * min_resistance_paths.size()
 
 	for positive in positives:
 		for path in self.map[positive.y][positive.x].paths:
@@ -194,9 +195,9 @@ func update_grid_logic():
 						
 	for i in range(len(self.negatives)):
 		var negative = self.map[self.negatives[i].y][self.negatives[i].x]
-		negative.enabled = abs(negative.desired_wattage - negative.wattage) < 0.1
+		negative.enabled = abs(negative.desired_wattage - negative.wattage) < 1
 		
-		self.wattage_labels[i].get_node("Label").text = "%.1f/%.1f" % [negative.wattage, negative.desired_wattage]
+		self.wattage_labels[i].get_node("Label").text = "%d/%d" % [negative.wattage, negative.desired_wattage]
 		if negative.enabled:
 			self.wattage_labels[i].get_node("Label").add_theme_color_override("font_color", negative.enabled_color)
 		else:

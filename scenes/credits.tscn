@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://cppgk2tcdvyl1"]
+
+[ext_resource type="Script" uid="uid://7lnik5mwcb2x" path="res://scripts/credits.gd" id="1_0bpdh"]
+[ext_resource type="FontFile" uid="uid://bix71i6b0ccka" path="res://assets/upheavtt.ttf" id="2_2ckv8"]
+[ext_resource type="Texture2D" uid="uid://dklnrejvew7vb" path="res://assets/positive.png" id="3_2fbfq"]
+[ext_resource type="Texture2D" uid="uid://b86m010dy0ea1" path="res://assets/negative.png" id="4_8gwij"]
+
+[node name="Credits" type="Node2D" unique_id=106570629]
+script = ExtResource("1_0bpdh")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=984500774]
+offset_right = 360.0
+offset_bottom = 192.0
+color = Color(0, 0, 0, 1)
+
+[node name="Title" type="Label" parent="." unique_id=814660517]
+offset_right = 360.0
+offset_bottom = 29.0
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_2ckv8")
+theme_override_font_sizes/font_size = 32
+text = "Watt's the Problem?"
+horizontal_alignment = 1
+
+[node name="Credits" type="VBoxContainer" parent="." unique_id=337633516]
+offset_left = 90.0
+offset_top = 192.0
+offset_right = 270.0
+offset_bottom = 272.0
+
+[node name="Label" type="Label" parent="Credits" unique_id=1371294340]
+layout_mode = 2
+theme_override_constants/outline_size = 0
+theme_override_fonts/font = ExtResource("2_2ckv8")
+text = "Game+Level Design"
+horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="Credits" unique_id=354052137]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_2ckv8")
+text = "Jack Frngs"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Credits" unique_id=240222077]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="Credits" unique_id=1422858466]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_2ckv8")
+text = "Art+Music"
+horizontal_alignment = 1
+
+[node name="Label4" type="Label" parent="Credits" unique_id=844545668]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_2ckv8")
+text = "Matthew Guilles"
+horizontal_alignment = 1
+
+[node name="Positive" type="TextureRect" parent="." unique_id=1885001371]
+offset_left = 20.0
+offset_top = 27.0
+offset_right = 80.0
+offset_bottom = 136.0
+texture = ExtResource("3_2fbfq")
+
+[node name="Negative" type="TextureRect" parent="." unique_id=1385550522]
+offset_left = 280.0
+offset_top = 27.0
+offset_right = 340.0
+offset_bottom = 136.0
+texture = ExtResource("4_8gwij")
+
+[node name="FinalMessage" type="Label" parent="." unique_id=733116879]
+offset_top = 139.0
+offset_right = 359.0
+offset_bottom = 190.0
+theme_override_fonts/font = ExtResource("2_2ckv8")
+theme_override_font_sizes/font_size = 14
+text = "
+You Win! 
+Thank you For playing! To exit, press escape."
+horizontal_alignment = 1

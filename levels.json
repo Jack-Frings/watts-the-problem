@@ -5,10 +5,22 @@
 	],
 	"circuit": [
 		{"x": 2, "y": 3, "type": "BatteryPositive", "rot": 0, "locked": true},
-		{"x": 6, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 33.3},
+		{"x": 6, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 3},
 	]
 },
 "1": {
+	"component_lib": [
+		{"type": "RightAngleConnector", "rot": 3, "count": 1},
+		{"type": "Resistor", "rot": 0, "count": 1},
+		{"type": "Resistor", "rot": 1, "count": 1},
+
+	],
+	"circuit": [
+		{"x": 1, "y": 1, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 3, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 9},
+	]
+},
+"2": {
 	"component_lib": [
 		{"type": "StraightConnector", "rot": 0, "count": 21},
 		{"type": "RightAngleConnector", "rot": 0, "count": 3},
@@ -18,10 +30,60 @@
 	],
 	"circuit": [
 		{"x": 0, "y": 0, "type": "BatteryPositive", "rot": 0, "locked": true},
-		{"x": 6, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 3.1},
+		{"x": 6, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 32},
 	]
 },
-"2": {
+"3": {
+	"component_lib": [
+		{"type": "StraightConnector", "rot": 0, "count": 1},
+		{"type": "StraightConnector", "rot": 1, "count": 9},
+		{"type": "RightAngleConnector", "rot": 0, "count": 2},
+		{"type": "RightAngleConnector", "rot": 1, "count": 2},
+		{"type": "RightAngleConnector", "rot": 2, "count": 2},
+		{"type": "RightAngleConnector", "rot": 3, "count": 2},
+	],
+	"circuit": [
+		{"x": 8, "y": 3, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 6, "y": 0, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 16},
+		{"x": 0, "y": 4, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 16},
+	]
+},
+"4": {
+	"component_lib": [
+		{"type": "StraightConnector", "rot": 0, "count": 4},
+		{"type": "StraightConnector", "rot": 1, "count": 6},
+		{"type": "RightAngleConnector", "rot": 0, "count": 1},
+		{"type": "RightAngleConnector", "rot": 2, "count": 1},
+	],
+	"circuit": [
+		{"x": 3, "y": 2, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 8, "y": 2, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 12},
+		{"x": 1, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 24},
+	]
+},
+"5": {
+	"component_lib": [
+		{"type": "StraightConnector", "rot": 0, "count": 4},
+		{"type": "StraightConnector", "rot": 1, "count": 7},
+		{"type": "RightAngleConnector", "rot": 0, "count": 4},
+		{"type": "RightAngleConnector", "rot": 1, "count": 2},
+		{"type": "RightAngleConnector", "rot": 2, "count": 2},
+		{"type": "RightAngleConnector", "rot": 3, "count": 2},
+		{"type": "FourWayConnector", "rot": 0, "count": 1},
+		{"type": "Resistor", "rot": 0, "count": 3},
+		{"type": "Resistor", "rot": 1, "count": 4},
+
+	],
+	"circuit": [
+		{"x": 4, "y": 3, "type": "BatteryPositive", "rot": 0, "locked": true},
+		{"x": 6, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+		{"x": 3, "y": 0, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+		{"x": 9, "y": 0, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+		{"x": 0, "y": 0, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 52},
+
+	]
+},
+"6": {
 	"component_lib": [
 		{"type": "StraightConnector", "rot": 0, "count": 3},
 		{"type": "StraightConnector", "rot": 1, "count": 5},
@@ -34,9 +96,9 @@
 	],
 	"circuit": [
 		{"x": 4, "y": 3, "type": "BatteryPositive", "rot": 0, "locked": true},
-		{"x": 3, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 1.7},
-		{"x": 0, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 3.3},
-		{"x": 8, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 3.3},
+		{"x": 3, "y": 5, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 60},
+		{"x": 0, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 120},
+		{"x": 8, "y": 3, "type": "BatteryNegative", "rot": 0, "locked": true, "wattage": 120},
 	]
 },
 }

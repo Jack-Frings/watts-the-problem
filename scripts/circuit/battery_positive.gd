@@ -2,7 +2,7 @@ class_name BatteryPositive extends CircuitTile
 
 var paths: Array
 var path_resistance: int = 100
-var voltage: float = 10.0
+var voltage: float = 50
 
 var top_atlas_x = 3
 var top_atlas_y = 0

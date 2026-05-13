@@ -108,9 +108,10 @@ func cursor_render(delta: float, winning_status: bool) -> void:
 func player_action() -> void:
 	if Input.is_action_pressed("erase") and p_workspace == WORKSPACE.CIRCUIT:
 		var tile = circuit_grid.map[py][px]
-		component_lib.add_tile_to_parts(tile)
-		circuit_grid.erase_tile(px, py)
-				
+		if not circuit_grid.locked_table[py][px]:
+			component_lib.add_tile_to_parts(tile)
+			circuit_grid.erase_tile(px, py)
+					
 	if Input.is_action_pressed("select"):
 		if p_workspace ==  WORKSPACE.COMPONENT_LIB:
 			p_tile = component_lib.copy_tile(px-component_lib_origin.x, py-component_lib_origin.y)

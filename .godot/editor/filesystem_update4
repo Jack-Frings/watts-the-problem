@@ -1,1 +1,6 @@
+res://levels.json
+res://scripts/main.gd
+res://scripts/circuit/circuit_grid.gd
+res://scripts/circuit/component_lib.gd
 res://scenes/credits.tscn
+res://scenes/main.tscn

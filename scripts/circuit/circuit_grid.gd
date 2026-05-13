@@ -111,7 +111,7 @@ func render() -> void:
 						if ny - y == 1:
 							self.battery_transition_down_layer.set_cell(Vector2i(x, y), tile.source_id, Vector2i(0, 0), get_rotation(0))
 							
-			if self.locked_table[y][x]:
+			if self.locked_table[y][x] and not (self.map[y][x] is BatteryPositive or self.map[y][x] is BatteryNegative):
 				self.icon_layer.set_cell(Vector2i(x, y), 1, Vector2i(0, 0))
 				
 
@@ -164,7 +164,7 @@ func update_grid_logic():
 		var min_resistance_paths = Array()
 		var min_resistance: float = -1
 		for negative in negatives:
-			var paths = get_paths_of_least_resistance(positive, negative)
+			var paths = find_all_routes(positive.x, positive.y, negative.x, negative.y)
 			for path in paths:
 				if path.size() > 0:
 					var resistance = get_resistance(path)

@@ -52,6 +52,15 @@ func refresh(tiles: Array, tile_counts: Array) -> void:
 		if x > width-1:
 			x = 0
 			y += 1
+			
+	clear()
+			
+			
+func clear():
+	for y in range(height):
+		for x in range(width):
+			self.circuit_layer.erase_cell(Vector2i(origin.x+x, origin.y+y))
+			self.icon_layer.erase_cell(Vector2i(origin.x+x, origin.y+y))
 		
 func add_tile_to_parts(tile: CircuitTile) -> void:
 	if tile == null:

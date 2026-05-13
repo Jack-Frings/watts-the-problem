@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://7lnik5mwcb2x" path="res://scripts/credits.gd" id="1_0bpdh"]
 [ext_resource type="FontFile" uid="uid://bix71i6b0ccka" path="res://assets/upheavtt.ttf" id="2_2ckv8"]
+[ext_resource type="Texture2D" uid="uid://crgub1olya31f" path="res://assets/title_frame.png" id="2_8gwij"]
 [ext_resource type="Texture2D" uid="uid://dklnrejvew7vb" path="res://assets/positive.png" id="3_2fbfq"]
 [ext_resource type="Texture2D" uid="uid://b86m010dy0ea1" path="res://assets/negative.png" id="4_8gwij"]
 
@@ -13,12 +14,20 @@ offset_right = 360.0
 offset_bottom = 192.0
 color = Color(0, 0, 0, 1)
 
+[node name="TileBackground" type="TextureRect" parent="." unique_id=168239273]
+offset_left = 7.0
+offset_top = 2.0
+offset_right = 353.0
+offset_bottom = 62.0
+texture = ExtResource("2_8gwij")
+
 [node name="Title" type="Label" parent="." unique_id=814660517]
+offset_top = 15.0
 offset_right = 360.0
-offset_bottom = 29.0
+offset_bottom = 44.0
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("2_2ckv8")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 30
 text = "Watt's the Problem?"
 horizontal_alignment = 1
 
@@ -55,6 +64,9 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("2_2ckv8")
 text = "Matthew Guilles"
 horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="Credits" unique_id=2088574176]
+layout_mode = 2
 
 [node name="Positive" type="TextureRect" parent="." unique_id=1885001371]
 offset_left = 20.0

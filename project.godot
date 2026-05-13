@@ -14,6 +14,10 @@ config/name="Watt's the Problem?"
 run/main_scene="uid://c3lvyo5q14i0e"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
+[autoload]
+
+BackgroundTrackPlayer="*uid://cigdyr8j8pktc"
+
 [display]
 
 window/size/viewport_width=360

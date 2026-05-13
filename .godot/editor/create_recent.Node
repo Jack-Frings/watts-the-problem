@@ -1,3 +1,4 @@
+AudioStreamPlayer
 TextureRect
 VBoxContainer
 Control
@@ -8,4 +9,3 @@ HSeparator
 VSeparator
 Node
 TileMapLayer
-AudioStreamPlayer

@@ -10,3 +10,5 @@ res://start_screen.gd
 res://scenes/start_screen.tscn
 res://scenes/credits.tscn
 res://scripts/credits.gd
+res://background_track_player.tscn
+res://scenes/background_track_player.tscn

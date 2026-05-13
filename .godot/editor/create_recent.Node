@@ -1,11 +1,11 @@
+TextureRect
+VBoxContainer
 Control
 ColorRect
 TextureButton
-TextureRect
 Label
 HSeparator
 VSeparator
-VBoxContainer
 Node
 TileMapLayer
 AudioStreamPlayer

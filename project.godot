@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Watt's the Problem?"
-run/main_scene="uid://cx3iiu66oqcpx"
+run/main_scene="uid://c3lvyo5q14i0e"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
 [display]

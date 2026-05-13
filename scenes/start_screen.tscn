@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://c3lvyo5q14i0e"]
+
+[ext_resource type="Script" uid="uid://drlqk4b3var4q" path="res://scripts/start_screen.gd" id="1_o30b1"]
+[ext_resource type="PackedScene" uid="uid://d5ki2x65hdma" path="res://scenes/tile_map.tscn" id="2_ka6nf"]
+[ext_resource type="Texture2D" uid="uid://t1wytp5v25yu" path="res://assets/normal_button.png" id="3_ws7p0"]
+[ext_resource type="Texture2D" uid="uid://bvhva0qth1wbl" path="res://assets/pressed_button.png" id="4_ecdxc"]
+[ext_resource type="Texture2D" uid="uid://cmskpn2m35lqk" path="res://assets/hovered_button.png" id="5_qls88"]
+[ext_resource type="Texture2D" uid="uid://crgub1olya31f" path="res://assets/title_frame.png" id="6_pcj7n"]
+[ext_resource type="FontFile" uid="uid://bix71i6b0ccka" path="res://assets/upheavtt.ttf" id="7_bdg0b"]
+
+[node name="StartScreen" type="Node2D" unique_id=112885856]
+script = ExtResource("1_o30b1")
+
+[node name="TileMap" parent="." unique_id=96002993 instance=ExtResource("2_ka6nf")]
+
+[node name="StartButton" type="TextureButton" parent="." unique_id=1133927631]
+z_index = 4
+anchors_preset = -1
+anchor_left = 0.70000005
+anchor_top = 0.587
+anchor_right = 0.70000005
+anchor_bottom = 0.587
+offset_left = 152.0
+offset_top = 100.0
+offset_right = 208.0
+offset_bottom = 147.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("3_ws7p0")
+texture_pressed = ExtResource("4_ecdxc")
+texture_hover = ExtResource("5_qls88")
+stretch_mode = 3
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1660276486]
+offset_left = 7.0
+offset_top = 35.0
+offset_right = 353.0
+offset_bottom = 95.0
+texture = ExtResource("6_pcj7n")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1385181595]
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 350.0
+offset_bottom = 84.0
+
+[node name="Title" type="Label" parent="VBoxContainer" unique_id=1784534069]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("7_bdg0b")
+theme_override_font_sizes/font_size = 28
+text = "Watt's the Problem?"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="VBoxContainer" unique_id=2144608080]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("7_bdg0b")
+theme_override_font_sizes/font_size = 14
+text = "The Electric Puzzle-Solving Extravaganza"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="StartButton" to="." method="_on_level_button_pressed"]
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]

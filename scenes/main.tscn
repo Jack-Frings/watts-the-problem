@@ -39,24 +39,24 @@ color = Color(0, 0, 0, 0.59607846)
 [node name="LevelComplete" type="TextureRect" parent="HUD" unique_id=1270128451]
 z_index = 4
 layout_mode = 0
-offset_left = -72.0
-offset_top = -75.0
-offset_right = 128.0
-offset_bottom = -25.0
+offset_left = -134.0
+offset_top = -60.0
+offset_right = 190.0
+offset_bottom = -16.0
 texture = ExtResource("4_jyhfs")
 
 [node name="LevelButton" type="TextureButton" parent="HUD" unique_id=1398160695]
 z_index = 4
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 36.0
-offset_bottom = 27.0
+anchors_preset = -1
+anchor_left = 0.70000005
+anchor_top = 0.587
+anchor_right = 0.70000005
+anchor_bottom = 0.587
+offset_left = -28.000002
+offset_top = -23.48
+offset_right = 27.999998
+offset_bottom = 23.52
 grow_horizontal = 2
 grow_vertical = 2
 texture_normal = ExtResource("5_o6xl0")

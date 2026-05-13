@@ -184,7 +184,7 @@ func update_grid_logic():
 				for path in min_resistance_paths:
 					var x = path[-1][0]
 					var y = path[-1][1]
-					self.map[y][x].wattage += (min_resistance) * min_resistance_paths.size()
+					self.map[y][x].wattage += (min_resistance) #* min_resistance_paths.size()
 
 	for positive in positives:
 		for path in self.map[positive.y][positive.x].paths:
@@ -276,6 +276,12 @@ func get_neighbor_conections(x: int, y: int) -> Array:
 			
 		var neighbor = self.map[ny][nx]
 		if neighbor == null: continue
+		
+		# Prevent two battery tiles from connecting to each other
+		var center_is_battery = center is BatteryPositive or center is BatteryNegative
+		var neighbor_is_battery = neighbor is BatteryPositive or neighbor is BatteryNegative
+		if center_is_battery and neighbor_is_battery:
+			continue
 		
 		var points_back = false
 		for neighbor_con in neighbor.cons:

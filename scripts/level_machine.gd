@@ -54,7 +54,7 @@ func get_level() -> String:
 	return self.cur
 	
 func read_level_json() -> Dictionary:
-	var path = "res://cur.json"
+	var path = "res://levels.json"
 	if not FileAccess.file_exists(path):
 		push_error("File not found: %s" % path)
 		return {}
